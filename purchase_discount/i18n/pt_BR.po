@@ -43,7 +43,7 @@ msgid "Discount (%)"
 msgstr "Desconto (%)"
 
 #. module: purchase_discount
-#: sql_constraint:purchase.order.line:0
+#: model:ir.model.constraint,message:purchase_discount.constraint_purchase_order_line_discount_limit
 msgid "Discount must be lower than 100%."
 msgstr ""
 
@@ -53,14 +53,8 @@ msgid "Discount-related settings are managed on"
 msgstr ""
 
 #. module: purchase_discount
-#: model:ir.model,name:purchase_discount.model_account_invoice
-msgid "Invoice"
-msgstr ""
-
-#. module: purchase_discount
 #: model:ir.model,name:purchase_discount.model_purchase_order
 #, fuzzy
-#| msgid "Purchase Order Line"
 msgid "Purchase Order"
 msgstr "Linha da Ordem de Compra"
 
@@ -72,7 +66,6 @@ msgstr "Linha da Ordem de Compra"
 #. module: purchase_discount
 #: model:ir.model,name:purchase_discount.model_purchase_report
 #, fuzzy
-#| msgid "Purchase Order Line"
 msgid "Purchase Report"
 msgstr "Linha da Ordem de Compra"
 
