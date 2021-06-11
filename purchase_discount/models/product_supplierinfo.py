@@ -18,7 +18,7 @@ class ProductSupplierInfo(models.Model):
             parent_category = rec.product_id.categ_id.parent_id
             if category.category_discount:
                 categ_discount = category.category_discount
-            if parent_category.category_discount:
+            elif parent_category.category_discount:
                 categ_discount = parent_category.category_discount
             rec.discount = categ_discount
     
