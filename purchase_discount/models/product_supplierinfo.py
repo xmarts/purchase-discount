@@ -14,9 +14,12 @@ class ProductSupplierInfo(models.Model):
     def _compute_category_discount:
         for rec in self:
             categ_discount = 0
-            category = rec.product_id.categ_id.parent_id.id
+            category = rec.product_id.categ_id
+            parent_category = rec.product_id.categ_id.parent_id
             if category.category_discount:
                 categ_discount = category.category_discount
+            if parent_category.category_discount:
+                categ_discount = parent_category.category_discount
             rec.discount = categ_discount
     
     
