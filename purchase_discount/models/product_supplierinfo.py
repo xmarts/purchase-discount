@@ -8,8 +8,17 @@ from odoo import api, fields, models
 class ProductSupplierInfo(models.Model):
     _inherit = "product.supplierinfo"
 
-    discount = fields.Float(string="Discount (%)", digits="Discount")
+    discount = fields.Float(string="Discount (%)", digits="Discount" , compute="_compute_category_discount")
 
+    def _compute_category_discount
+        for rec in self:
+            categ_discount = 0
+            category = rec.product_id.categ_id.parent_id.id
+            if category.category_discount:
+                categ_discount = category.category_discount
+            rec.discount = categ_discount
+    
+    
     @api.onchange("name")
     def onchange_name(self):
         """ Apply the default supplier discount of the selected supplier """

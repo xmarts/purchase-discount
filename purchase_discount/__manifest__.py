@@ -4,6 +4,13 @@
 # License AGPL-3 - See http://www.gnu.org/licenses/agpl-3.0.html
 {
     "name": "Purchase order lines with discounts",
+    'summary': """
+    *- agrega descuentos por categoria de productos en las lineas de compra\n
+    """,
+    'description': """
+        Long description of module's purpose
+    """,
+
     "author": "Tiny, "
     "Acysos S.L., "
     "Tecnativa, "
@@ -19,6 +26,7 @@
         "views/report_purchaseorder.xml",
         "views/product_supplierinfo_view.xml",
         "views/res_partner_view.xml",
+        "views/product_category.xml",
     ],
     "license": "AGPL-3",
     "installable": True,
