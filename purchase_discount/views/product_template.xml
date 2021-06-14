@@ -10,6 +10,9 @@
                         <label for="descuento"/>
                         <div>
                             <field name='descuento'/>
+                        </div>
+                        <label for="descuento padre"/>
+                        <div>
                             <field name='descuento_padre'/>
                         </div>
                     </group>
