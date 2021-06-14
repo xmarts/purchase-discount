@@ -14,5 +14,5 @@ class ProductCategory(models.Model):
             categ_discount = 0
             descuento = rec.parent_id.category_discount
             if descuento:
-                categ_discount = descuento_padre
+                categ_discount = descuento
         rec.descuento_padre = categ_discount
