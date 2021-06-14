@@ -10,6 +10,7 @@
                         <label for="descuento"/>
                         <div>
                             <field name='descuento'/>
+                            <field name='descuento_padre'/>
                         </div>
                     </group>
                 </xpath>
