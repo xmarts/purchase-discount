@@ -11,6 +11,8 @@
                         <div>
                             <field name='descuento'/>
                         </div>
+                    </group>
+                    <group>
                         <label for="descuento padre"/>
                         <div>
                             <field name='descuento_padre'/>
