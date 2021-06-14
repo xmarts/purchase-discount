@@ -8,7 +8,7 @@ class ProductTemplate(models.Model):
     descuento = fields.Float(related="categ_id.category_discount")
     descuento_padre = fields.Float(related="categ_id.descuento_padre")
 
-    @api.depends("categ_id.parent_id.category_discount", "categ_id.category_discount", "seller_ids","seller_ids.price")
+    @api.depends("descuento_padre", "descuento", "seller_ids","seller_ids.price")
     def _compute_category_discount(self):
         for rec in self:
             discount = rec.descuento
