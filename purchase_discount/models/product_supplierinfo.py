@@ -12,7 +12,7 @@ class ProductSupplierInfo(models.Model):
     
     
     
-    @api.depends("descuento_padre", "descuento")
+    @api.depends("product_tmpl_id.descuento_padre", "product_tmpl_id.descuento")
     def _compute_category_discount(self):
         for rec in self:
             discount_category = rec.product_tmpl_id.descuento
