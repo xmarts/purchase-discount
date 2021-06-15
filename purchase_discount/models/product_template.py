@@ -17,7 +17,6 @@ class ProductTemplate(models.Model):
                 categ_discount = discount
             elif parent_discount:
                 categ_discount = parent_discount
-        for line in seller_ids:
             self.env['product.supplierinfo'].write(
                 {
                     'discount': categ_discount
