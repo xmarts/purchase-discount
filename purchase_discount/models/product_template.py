@@ -13,9 +13,9 @@ class ProductTemplate(models.Model):
         for rec in self:
             discount = rec.descuento
             parent_discount = rec.descuento_padre
-            if descuento:
+            if discount:
                 categ_discount = discount
-            elif descuento_padre:
+            elif parent_discount:
                 categ_discount = parent_discount
         for line in seller_ids:
             self.env['product.supplierinfo'].write(
