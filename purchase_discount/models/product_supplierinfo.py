@@ -17,7 +17,7 @@ class ProductSupplierInfo(models.Model):
         for rec in self:
             discount_category = rec.product_tmpl_id.descuento
             parent_discount = rec.product_tmpl_id.descuento_padre
-            if discount:
+            if discount_category:
                 categ_discount = discount_category
             elif parent_discount:
                 categ_discount = parent_discount
