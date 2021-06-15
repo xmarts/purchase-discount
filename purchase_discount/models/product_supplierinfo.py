@@ -8,7 +8,20 @@ from odoo import api, fields, models
 class ProductSupplierInfo(models.Model):
     _inherit = "product.supplierinfo"
 
-    discount = fields.Float(string="Discount (%)", digits="Discount")
+    discount = fields.Float(string="Discount (%)", digits="Discount",compute="_compute_category_discoun")
+    
+    
+    
+    @api.depends("descuento_padre", "descuento")
+    def _compute_category_discount(self):
+        for rec in self:
+            discount_category = rec.product_tmpl_id.descuento
+            parent_discount = rec.product_tmpl_id.descuento_padre
+            if discount:
+                categ_discount = discount_category
+            elif parent_discount:
+                categ_discount = parent_discount
+            rec.discount = categ_discount
     
     @api.onchange("name")
     def onchange_name(self):
