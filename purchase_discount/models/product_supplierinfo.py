@@ -8,7 +8,7 @@ from odoo import api, fields, models
 class ProductSupplierInfo(models.Model):
     _inherit = "product.supplierinfo"
 
-    discount = fields.Float(string="Discount (%)", digits="Discount",compute="_compute_category_discoun")
+    discount = fields.Float(string="Discount (%)", digits="Discount",compute="_compute_category_discount")
     
     
     
