@@ -15,7 +15,7 @@ class ProductCategory(models.Model):
             descuento = rec.parent_id.category_discount
             if descuento:
                 categ_discount = descuento
-        rec.descuento_padre = categ_discount
+            rec.descuento_padre = categ_discount
 
     @api.onchange("category_discount")
     def _env_category_discount(self):
