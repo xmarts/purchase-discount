@@ -22,4 +22,4 @@ class ProductCategory(models.Model):
         for rec in self:
             dicount = rec.category_discount
             if discount:
-                self.env["product.template"].search([('categ_id', '=', self.id)]).write("descuento":discount)
+                self.env["product.template"].search([('categ_id', '=', self.id)]).write({"descuento":discount}) 
