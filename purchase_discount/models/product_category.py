@@ -24,4 +24,4 @@ class ProductCategory(models.Model):
             if discount:
                 products =self.env["product.template"].search([('categ_id', '=', self.id)])
                 for p in products:
-                    p..write({"descuento":discount}) 
+                    p.write({"descuento":discount}) 
