@@ -9,7 +9,7 @@
                 <xpath expr="//field[@name='property_valuation']" position = "after"> 
                     <field name="category_discount"/>
                     <field name="descuento_padre"/>
-                    <field name="child_id">
+                    <field name="child_id"/>
                 </xpath>
             </field>
         </record> 
