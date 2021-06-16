@@ -20,7 +20,7 @@ class ProductCategory(models.Model):
     @api.onchange("category_discount")
     def _env_category_discount(self):
         for rec in self:
-            dicount = rec.category_discount
+            discount = rec.category_discount
             if discount:
                 products =self.env["product.template"].search([('categ_id', '=', self.id)])
                 for p in products:
