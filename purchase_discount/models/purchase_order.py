@@ -36,6 +36,7 @@ class PurchaseOrderLine(models.Model):
         return vals
 
     discount = fields.Float(string="Discount (%)", digits="Discount")
+    categ_id = fields.Many2one(related="product.categ_id")
 
     _sql_constraints = [
         (
@@ -100,9 +101,16 @@ class PurchaseOrderLine(models.Model):
     def _apply_value_from_seller(self, seller):
         """Overload this function to prepare other data from seller,
         like in purchase_triple_discount module"""
-        if not seller:
-            return
-        self.discount = seller.discount
+        for rec in self:
+            if not seller and not categ_id.category_discount and not categ_id.descuento_padre:
+                return
+        
+            elif categ_id.category_discount:
+                rec.discount = rec.categ_id.category_discount
+            elif categ_id.descuento_padre:
+                rec.discount = rec.categ_id.descuento_padre
+            else:
+                rec.discount = rec.seller.discount
 
     def _prepare_account_move_line(self, move=False):
         vals = super(PurchaseOrderLine, self)._prepare_account_move_line(move)
