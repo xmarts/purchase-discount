@@ -14,7 +14,7 @@ class ProductTemplate(models.Model):
     @api.depends("categ_id.category_dicount")
     def _compute_category_discount(self):
         for rec in self:
-            if rec.categ_id.category_discount:
+            if categ_id.category_discount:
                 rec.descuento_padre = rec.parent_id.descuento_padre
-            if rec.    
+            if rec.categ_id.category_discount
                 rec.descuento = rec.categ_id.category_discount
