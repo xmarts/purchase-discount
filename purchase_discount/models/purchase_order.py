@@ -104,11 +104,12 @@ class PurchaseOrderLine(models.Model):
         for rec in self:
             if not seller and not categ_id.category_discount and not categ_id.descuento_padre:
                 return
-        
-            elif categ_id.category_discount:
-                rec.discount = rec.categ_id.category_discount
-            elif categ_id.descuento_padre:
-                rec.discount = rec.categ_id.descuento_padre
+            discount_category = rec.categ_id.category_discount
+            parent_discount = rec.categ_id.descuento_padre
+            elif discount_category:
+                rec.discount = discount_category
+            elif parent_discount:
+                rec.discount = parent_discount
             else:
                 rec.discount = rec.seller.discount
 
