@@ -34,9 +34,10 @@ class PurchaseOrderLine(models.Model):
         vals = super()._prepare_compute_all_values()
         vals.update({"price_unit": self._get_discounted_price_unit()})
         return vals
-
+    
+    categ_id = fields.Many2one(compute="_compute_categ")
     discount = fields.Float(string="Discount (%)", digits="Discount")
-    categ_id = fields.Many2one(related="product_id.categ_id")
+    
 
     _sql_constraints = [
         (
@@ -45,6 +46,10 @@ class PurchaseOrderLine(models.Model):
             "Discount must be lower than 100%.",
         )
     ]
+    @api.depends("product_id")
+    def _compute_categ(self):
+        if self.product_id.categ_id
+            self.categ_id = self.categ_id
 
     def _get_discounted_price_unit(self):
         """Inheritable method for getting the unit price after applying
@@ -98,7 +103,7 @@ class PurchaseOrderLine(models.Model):
         return res
 
     @api.model
-    def _apply_value_from_seller(self, seller):
+    def _apply_value_from_seller(self):
         """Overload this function to prepare other data from seller,
         like in purchase_triple_discount module"""
         for rec in self:
@@ -110,8 +115,7 @@ class PurchaseOrderLine(models.Model):
                 rec.discount = discount_category
             elif parent_discount:
                 rec.discount = parent_discount
-            else:
-                rec.discount = rec.seller.discount
+            
 
     def _prepare_account_move_line(self, move=False):
         vals = super(PurchaseOrderLine, self)._prepare_account_move_line(move)
