@@ -10,7 +10,7 @@ class ProductCategory(models.Model):
     descuento_padre = fields.Float(string="Parent Category Discount (%)",
         compute="_compute_category_discount")
 
-    @api.depends("parent_id.category_dicount")
+    @api.depends("parent_id.category_discount")
     def _compute_category_discount(self):
         for rec in self:    
             if rec.parent_id.category_discount:
