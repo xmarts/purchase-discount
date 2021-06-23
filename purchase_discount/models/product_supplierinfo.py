@@ -11,7 +11,6 @@ class ProductSupplierInfo(models.Model):
     discount = fields.Float(string="Discount (%)", digits="Discount",compute="_compute_category_discount")
     
     
-    
     @api.depends("product_tmpl_id.descuento_padre", "product_tmpl_id.descuento")
     def _compute_category_discount(self):
         for rec in self:
