@@ -8,7 +8,7 @@ class ProductCategory(models.Model):
         string="Category Discount (%)")
 
     descuento_padre = fields.Float(string="Parent Category Discount (%)",
-        compute="compute_category_discount")
+        compute="_compute_category_discount")
 
     @api.depends("parent_id.category_dicount")
     def _compute_category_discount(self):
