@@ -35,7 +35,7 @@ class PurchaseOrderLine(models.Model):
         vals.update({"price_unit": self._get_discounted_price_unit()})
         return vals
     
-    categ_id = fields.Many2one(compute="_compute_categ")
+    categ_id = fields.Many2one(related="product_id.categ_id")
     discount = fields.Float(string="Discount (%)", compute="_compute_category_discount")
     
 
@@ -46,12 +46,7 @@ class PurchaseOrderLine(models.Model):
             "Discount must be lower than 100%.",
         )
     ]
-    @api.depends("product_id.categ_id")
-    def _compute_categ(self):
-        for rec in self:
-            if rec.product_id.categ_id:
-                rec.categ_id = rec.product_id.categ_id
-
+    
     def _get_discounted_price_unit(self):
         """Inheritable method for getting the unit price after applying
         discount(s).
