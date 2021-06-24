@@ -36,7 +36,7 @@ class PurchaseOrderLine(models.Model):
         return vals
     
     categ_id = fields.Many2one(compute="_compute_categ")
-    discount = fields.Float(string="Discount (%)", digits="Discount")
+    discount = fields.Float(string="Discount (%)", compute="_compute_category_discount")
     
 
     _sql_constraints = [
@@ -46,10 +46,11 @@ class PurchaseOrderLine(models.Model):
             "Discount must be lower than 100%.",
         )
     ]
-    @api.depends("product_id")
+    @api.depends("product_id.categ_id")
     def _compute_categ(self):
-        if self.product_id.categ_id
-            self.categ_id = self.categ_id
+        for rec in self:
+            if rec.product_id.categ_id:
+                rec.categ_id = rec.product_id.categ_id
 
     def _get_discounted_price_unit(self):
         """Inheritable method for getting the unit price after applying
@@ -99,23 +100,19 @@ class PurchaseOrderLine(models.Model):
                 date=date,
                 uom_id=self.product_uom,
             )
-            self._apply_value_from_seller(seller)
         return res
 
-    @api.model
-    def _apply_value_from_seller(self):
-        """Overload this function to prepare other data from seller,
-        like in purchase_triple_discount module"""
+    
+    @api.depends("categ_id.category_discount","categ_id.descuento_padre")
+    def _compute_category_discount(self):
         for rec in self:
-            if not seller and not categ_id.category_discount and not categ_id.descuento_padre:
-                return
             discount_category = rec.categ_id.category_discount
             parent_discount = rec.categ_id.descuento_padre
-            elif discount_category:
-                rec.discount = discount_category
+            if discount_category:
+                categ_discount = discount_category
             elif parent_discount:
-                rec.discount = parent_discount
-            
+                categ_discount = parent_discount
+            rec.discount = categ_discount
 
     def _prepare_account_move_line(self, move=False):
         vals = super(PurchaseOrderLine, self)._prepare_account_move_line(move)
@@ -141,10 +138,3 @@ class PurchaseOrderLine(models.Model):
         res.update(self._prepare_purchase_order_line_from_seller(seller))
         return res
 
-    @api.model
-    def _prepare_purchase_order_line_from_seller(self, seller):
-        """Overload this function to prepare other data from seller,
-        like in purchase_triple_discount module"""
-        if not seller:
-            return {}
-        return {"discount": seller.discount}
