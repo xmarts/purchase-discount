@@ -54,6 +54,7 @@ class PurchaseOrderLine(models.Model):
         :rtype: float
         :return: Unit price after discount(s).
         """
+        self.ensure_one()
         if self.discount:
             return self.price_unit * (1 - self.discount / 100)
         return self.price_unit
@@ -97,6 +98,7 @@ class PurchaseOrderLine(models.Model):
         return res
 
     def compute_parent(self,parent_category):
+        self.ensure_one()
         for rec in self:
             if parent_category.category_discount:
                 return parent_category.category_discount
