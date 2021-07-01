@@ -99,11 +99,11 @@ class PurchaseOrderLine(models.Model):
 
     def compute_parent(self,parent_category,discount_c):
         for rec in self:
-            if rec.parent_category.category_discount:
-                discount_c = rec.parent_category.category_discount
+            if parent_category.category_discount:
+                discount_c = parent_category.category_discount
                 print(discount_c)
-            if rec.parent_category.parent_id:
-                parent_category = rec.parent_category.parent_id
+            if parent_category.parent_id:
+                parent_category = parent_category.parent_id
                 rec.compute_parent(parent_category,discount_c)
             return discount_c
     
@@ -111,6 +111,7 @@ class PurchaseOrderLine(models.Model):
     def _compute_category_discount(self):
         categ = self.categ_id
         discount_c = 0
+        print(discount_c)
         self.compute_parent(categ, discount_c)
         print(discount_c)
         for rec in self:   
