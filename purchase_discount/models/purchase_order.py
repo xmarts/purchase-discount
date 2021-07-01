@@ -100,10 +100,21 @@ class PurchaseOrderLine(models.Model):
     
     @api.depends("categ_id.category_discount","categ_id.descuento_padre")
     def _compute_category_discount(self):
-        for rec in self:
+        categ = self.categ_id
+        parent_discount = 0
+        def compute_parent(parent_category,discount_c):
+            if parent_category.category_discount:
+                discount_c = parent_category.category_discount
+                print(discount_c)
+            while parent_category.parent_id:
+                parent_category = parent_category.parent_id
+                compute_parent(parent_category,discount_c)
+            return discount_c
+        compute_parent(categ, parent_discount)
+        print(parent_discount)
+        for rec in self:   
             categ_discount = 0
             discount_category = rec.categ_id.category_discount
-            parent_discount = rec.categ_id.descuento_padre
             if discount_category:
                 categ_discount = discount_category
             elif parent_discount:
