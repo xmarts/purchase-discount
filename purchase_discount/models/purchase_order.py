@@ -98,7 +98,6 @@ class PurchaseOrderLine(models.Model):
         return res
 
     def compute_parent(self,parent_category):
-        self.ensure_one()
         for rec in self:
             if parent_category.category_discount:
                 return parent_category.category_discount
