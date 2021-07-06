@@ -113,9 +113,17 @@ class PurchaseOrderLine(models.Model):
             categ = rec.categ_id
             categ_discount = 0
             discount_c = rec.compute_parent(categ, categ_discount)
+            seller = self.product_id._select_seller(
+                partner_id=self.partner_id,
+                quantity=self.product_qty,
+                uom_id=self.product_uom,
+            )
             if discount_c:
                 categ_discount = discount_c
+            elif seller.discount:
+                categ_discount = seller.discount
             rec.discount = categ_discount
+            
 
     def _prepare_account_move_line(self, move=False):
         vals = super(PurchaseOrderLine, self)._prepare_account_move_line(move)

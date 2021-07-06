@@ -27,7 +27,6 @@
         "views/product_supplierinfo_view.xml",
         "views/res_partner_view.xml",
         "views/product_category.xml",
-        "views/product_template.xml",
     ],
     "license": "AGPL-3",
     "installable": True,
