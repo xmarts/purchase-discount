@@ -15,7 +15,7 @@
                     <group>
                         <label for="descuento_padre"/>
                         <div>
-                            <field name='descuento_padre'/>
+                            <field name='descuento_padre' invisible="1"/>
                         </div>
                     </group>
                 </xpath>

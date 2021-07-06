@@ -8,7 +8,7 @@
             <field name="arch" type="xml">
                 <xpath expr="//field[@name='property_valuation']" position = "after"> 
                     <field name="category_discount"/>
-                    <field name="descuento_padre"/>
+                    <field name="descuento_padre" invisible="1"//>
                 </xpath>
             </field>
         </record> 
