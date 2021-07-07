@@ -113,16 +113,18 @@ class PurchaseOrderLine(models.Model):
             categ = rec.categ_id
             categ_discount = 0
             discount_c = rec.compute_parent(categ, categ_discount)
+            seller = False
             if rec.product_id:
                 seller = rec.product_id._select_seller(
                     partner_id=rec.partner_id,
                     quantity=rec.product_qty,
-                    uom_id=rec.product_uom,
-                )
+                    date=rec.order_id.date_order and rec.order_id.date_order.date(),
+                    uom_id=rec.product_uom)
             if discount_c:
                 categ_discount = discount_c
-            elif seller.discount:
-                categ_discount = seller.discount
+            elif seller:
+                if seller.discount:
+                    categ_discount = seller.discount
             rec.discount = categ_discount
             
 
