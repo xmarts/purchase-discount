@@ -36,7 +36,7 @@ class PurchaseOrderLine(models.Model):
         return vals
     
     categ_id = fields.Many2one(related="product_id.categ_id")
-    discount = fields.Float(string="Discount (%)", compute="_compute_category_discount")
+    discount = fields.Float(string="Discount (%)", compute="_compute_category_discount", store=True)
     
 
     _sql_constraints = [
