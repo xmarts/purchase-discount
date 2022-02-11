@@ -34,10 +34,8 @@ class PurchaseOrderLine(models.Model):
         vals = super()._prepare_compute_all_values()
         vals.update({"price_unit": self._get_discounted_price_unit()})
         return vals
-    
-    categ_id = fields.Many2one(related="product_id.categ_id")
-    discount = fields.Float(string="Discount (%)", compute="_compute_category_discount", store=True)
-    
+
+    discount = fields.Float(string="Discount (%)", digits="Discount")
 
     _sql_constraints = [
         (
@@ -46,7 +44,7 @@ class PurchaseOrderLine(models.Model):
             "Discount must be lower than 100%.",
         )
     ]
-    
+
     def _get_discounted_price_unit(self):
         """Inheritable method for getting the unit price after applying
         discount(s).
@@ -95,50 +93,21 @@ class PurchaseOrderLine(models.Model):
                 date=date,
                 uom_id=self.product_uom,
             )
+            self._apply_value_from_seller(seller)
         return res
 
-    def compute_parent(self,parent_category):
-        for rec in self: 
-            if parent_category.category_discount:
-                discount_cat = parent_category.category_discount        
-                return discount_cat
-            if parent_category.parent_id:
-                return rec.compute_parent(parent_category.parent_id)
-        return False
-    
-    @api.depends("categ_id.category_discount","categ_id.descuento_padre")
-    def _compute_category_discount(self):
-        for rec in self:   
-            categ = rec.categ_id
-            categ_discount = 0
-            discount_c = rec.compute_parent(categ)
-            seller = False
-            if rec.product_id:
-                seller = rec.product_id._select_seller(
-                    partner_id=rec.partner_id,
-                    quantity=rec.product_qty,
-                    date=rec.order_id.date_order and rec.order_id.date_order.date(),
-                    uom_id=rec.product_uom)
-            if discount_c:
-                categ_discount = discount_c
-            elif seller:
-                if seller.discount:
-                    categ_discount = seller.discount
-            rec.discount = categ_discount
-            
+    @api.model
+    def _apply_value_from_seller(self, seller):
+        """Overload this function to prepare other data from seller,
+        like in purchase_triple_discount module"""
+        if not seller:
+            return
+        self.discount = seller.discount
 
     def _prepare_account_move_line(self, move=False):
         vals = super(PurchaseOrderLine, self)._prepare_account_move_line(move)
         vals["discount"] = self.discount
         return vals
-
-    @api.model
-    def _prepare_purchase_order_line_from_seller(self, seller):
-        """Overload this function to prepare other data from seller,
-        like in purchase_triple_discount module"""
-        if not seller:
-            return {}
-        return {"discount": seller.discount}
 
     @api.model
     def _prepare_purchase_order_line(
@@ -159,3 +128,10 @@ class PurchaseOrderLine(models.Model):
         res.update(self._prepare_purchase_order_line_from_seller(seller))
         return res
 
+    @api.model
+    def _prepare_purchase_order_line_from_seller(self, seller):
+        """Overload this function to prepare other data from seller,
+        like in purchase_triple_discount module"""
+        if not seller:
+            return {}
+        return {"discount": seller.discount}
