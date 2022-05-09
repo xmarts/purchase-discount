@@ -3,48 +3,53 @@
 # Copyright 2015-2019 Tecnativa - Pedro M. Baeza
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
+
 from odoo import api, fields, models
-import odoo.addons.decimal_precision as dp
 
 
 class PurchaseOrder(models.Model):
     _inherit = 'purchase.order'
 
-    @api.multi
     def _add_supplier_to_product(self):
-        """ Insert a mapping of products to PO lines to be picked up
-        in supplierinfo's create() """
+        """Insert a mapping of products to PO lines to be picked up
+        in supplierinfo's create()"""
         self.ensure_one()
-        po_line_map = dict([
-            (line.product_id.product_tmpl_id.id, line)
-            for line in self.order_line
-        ])
-        return super(PurchaseOrder, self.with_context(
-            po_line_map=po_line_map))._add_supplier_to_product()
+        po_line_map = {
+            line.product_id.product_tmpl_id.id: line for line in self.order_line
+        }
+        return super(
+            PurchaseOrder, self.with_context(po_line_map=po_line_map)
+        )._add_supplier_to_product()
 
 
 class PurchaseOrderLine(models.Model):
     _inherit = "purchase.order.line"
 
     # adding discount to depends
-    @api.depends('discount')
+    @api.depends("discount")
     def _compute_amount(self):
         return super()._compute_amount()
 
     def _prepare_compute_all_values(self):
         vals = super()._prepare_compute_all_values()
-        vals.update({'price_unit': self._get_discounted_price_unit()})
+        vals.update({"price_unit": self._get_discounted_price_unit()})
         return vals
-
+    
+    categ_id = fields.Many2one(related="product_id.categ_id")
     discount = fields.Float(
-        string='Discount (%)', digits=dp.get_precision('Discount'),
+        string="Discount (%)", 
+        compute="_compute_category_discount", 
+        store=True
     )
-
+    
     _sql_constraints = [
-        ('discount_limit', 'CHECK (discount <= 100.0)',
-         'Discount must be lower than 100%.'),
+        (
+            "discount_limit",
+            "CHECK (discount <= 100.0)",
+            "Discount must be lower than 100%.",
+        )
     ]
-
+    
     def _get_discounted_price_unit(self):
         """Inheritable method for getting the unit price after applying
         discount(s).
@@ -57,7 +62,6 @@ class PurchaseOrderLine(models.Model):
             return self.price_unit * (1 - self.discount / 100)
         return self.price_unit
 
-    @api.multi
     def _get_stock_move_price_unit(self):
         """Get correct price with discount replacing current price_unit
         value before calling super and restoring it later for assuring
@@ -77,7 +81,7 @@ class PurchaseOrderLine(models.Model):
             self.price_unit = price_unit
         return price
 
-    @api.onchange('product_qty', 'product_uom')
+    @api.onchange("product_qty", "product_uom")
     def _onchange_quantity(self):
         """
         Check if a discount is defined into the supplier info and if so then
@@ -89,15 +93,72 @@ class PurchaseOrderLine(models.Model):
             if self.order_id.date_order:
                 date = self.order_id.date_order.date()
             seller = self.product_id._select_seller(
-                partner_id=self.partner_id, quantity=self.product_qty,
-                date=date, uom_id=self.product_uom)
-            self._apply_value_from_seller(seller)
+                partner_id=self.partner_id,
+                quantity=self.product_qty,
+                date=date,
+                uom_id=self.product_uom,
+            )
         return res
 
+    def compute_parent(self, parent_category):
+        for rec in self: 
+            if parent_category.category_discount:
+                discount_cat = parent_category.category_discount        
+                return discount_cat
+            if parent_category.parent_id:
+                return rec.compute_parent(parent_category.parent_id)
+        return False
+    
+    @api.depends("categ_id.category_discount","categ_id.descuento_padre")
+    def _compute_category_discount(self):
+        for rec in self:   
+            categ = rec.categ_id
+            categ_discount = 0
+            discount_c = rec.compute_parent(categ)
+            seller = False
+            if rec.product_id:
+                seller = rec.product_id._select_seller(
+                    partner_id=rec.partner_id,
+                    quantity=rec.product_qty,
+                    date=rec.order_id.date_order and rec.order_id.date_order.date(),
+                    uom_id=rec.product_uom)
+            if discount_c:
+                categ_discount = discount_c
+            elif seller:
+                if seller.discount:
+                    categ_discount = seller.discount
+            rec.discount = categ_discount
+            
+
+    def _prepare_account_move_line(self, move=False):
+        vals = super(PurchaseOrderLine, self)._prepare_account_move_line(move)
+        vals["discount"] = self.discount
+        return vals
+
     @api.model
-    def _apply_value_from_seller(self, seller):
+    def _prepare_purchase_order_line_from_seller(self, seller):
         """Overload this function to prepare other data from seller,
         like in purchase_triple_discount module"""
         if not seller:
-            return
-        self.discount = seller.discount
+            return {}
+        return {"discount": seller.discount}
+
+    @api.model
+    def _prepare_purchase_order_line(
+        self, product_id, product_qty, product_uom, company_id, supplier, po
+    ):
+        """Apply the discount to the created purchase order"""
+        res = super()._prepare_purchase_order_line(
+            product_id, product_qty, product_uom, company_id, supplier, po
+        )
+        partner = supplier.name
+        uom_po_qty = product_uom._compute_quantity(product_qty, product_id.uom_po_id)
+        seller = product_id.with_company(company_id)._select_seller(
+            partner_id=partner,
+            quantity=uom_po_qty,
+            date=po.date_order and po.date_order.date(),
+            uom_id=product_id.uom_po_id,
+        )
+        res.update(self._prepare_purchase_order_line_from_seller(seller))
+        return res
+

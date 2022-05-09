@@ -5,7 +5,7 @@ from odoo import models
 
 
 class StockMove(models.Model):
-    _inherit = "stock.move"
+    _inherit = 'stock.move'
 
     def _get_price_unit(self):
         """Get correct price with discount replacing current price_unit
