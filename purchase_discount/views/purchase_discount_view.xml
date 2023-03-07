@@ -7,7 +7,6 @@
         <field name="arch" type="xml">
             <field name="price_unit" position="after">
                 <field name="discount" />
-                <field name="categ_id" invisible="1"/>
             </field>
         </field>
     </record>
@@ -18,7 +17,6 @@
         <field name="arch" type="xml">
             <field name="price_unit" position="after">
                 <field name="discount" />
-                <field name="categ_id" invisible="1"/>
             </field>
         </field>
     </record>
@@ -32,14 +30,12 @@
                 position="after"
             >
                 <field name="discount" />
-                <field name="categ_id" invisible="1"/>
             </xpath>
             <xpath
                 expr="//field[@name='order_line']/form//field[@name='price_unit']"
                 position="after"
             >
                 <field name="discount" />
-                <field name="categ_id" invisible="1"/>
             </xpath>
         </field>
     </record>
