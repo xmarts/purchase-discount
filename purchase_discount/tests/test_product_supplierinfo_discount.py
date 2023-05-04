@@ -2,11 +2,11 @@
 # Copyright 2019 Tecnativa - Pedro M. Baeza
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
-import odoo.tests.common as common
 from odoo import fields
+from odoo.tests.common import TransactionCase
 
 
-class TestProductSupplierinfoDiscount(common.SavepointCase):
+class TestProductSupplierinfoDiscount(TransactionCase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
@@ -140,3 +140,24 @@ class TestProductSupplierinfoDiscount(common.SavepointCase):
         )
         self.assertTrue(seller)
         self.assertEqual(seller.discount, 40)
+
+    def test_007_change_price_unit_autoupdate_stock_move(self):
+        partner = self.env.ref("base.res_partner_3")
+        product = self.env.ref("product.product_product_8")
+        order = self.env["purchase.order"].create({"partner_id": partner.id})
+        self.purchase_order_line_model.create(
+            {
+                "date_planned": fields.Datetime.now(),
+                "discount": 40,
+                "name": product.name,
+                "price_unit": 10.0,
+                "product_id": product.id,
+                "product_qty": 1.0,
+                "product_uom": product.uom_po_id.id,
+                "order_id": order.id,
+            }
+        )
+        order.button_confirm()
+        self.assertEqual(order.order_line.move_ids.price_unit, 6)
+        order.order_line.price_unit = 100
+        self.assertEqual(order.order_line.move_ids.price_unit, 60)

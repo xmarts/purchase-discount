@@ -65,17 +65,22 @@ class PurchaseOrderLine(models.Model):
         HACK: This is needed while https://github.com/odoo/odoo/pull/29983
         is not merged.
         """
-        for rec in self:
-            price_unit = False
-            price = rec._get_discounted_price_unit()
-            if price != rec.price_unit:
-                # Only change value if it's different
-                price_unit = rec.price_unit
-                rec.price_unit = price
-            price = super()._get_stock_move_price_unit()
-            if price_unit:
-                rec.price_unit = price_unit
-            return price
+        # Use 'skip_update_price_unit' context key to avoid infinite
+        # recursion. Updating the price_unit field here triggers the
+        # 'write' method of 'purchase.order.line' in stock_account
+        # module which triggers this method again.
+        if self.env.context.get("skip_update_price_unit"):
+            return super()._get_stock_move_price_unit()
+        price_unit = False
+        price = self._get_discounted_price_unit()
+        if price != self.price_unit:
+            # Only change value if it's different
+            price_unit = self.price_unit
+            self.with_context(skip_update_price_unit=True).price_unit = price
+        price = super()._get_stock_move_price_unit()
+        if price_unit:
+            self.with_context(skip_update_price_unit=True).price_unit = price_unit
+        return price
 
     @api.onchange("product_qty", "product_uom")
     def _onchange_quantity(self):
