@@ -71,9 +71,9 @@ class PurchaseOrderLine(models.Model):
             # Only change value if it's different
             price_unit = self.price_unit
             self.price_unit = price
-        price = super()._get_stock_move_price_unit()
-        #if price_unit:
-        #    self.price_unit = price_unit
+        #price = super()._get_stock_move_price_unit()
+        if price_unit:
+            self.price_unit = price_unit
         return price
 
     @api.onchange("product_qty", "product_uom")
