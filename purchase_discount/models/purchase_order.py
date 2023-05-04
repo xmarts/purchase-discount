@@ -65,16 +65,17 @@ class PurchaseOrderLine(models.Model):
         HACK: This is needed while https://github.com/odoo/odoo/pull/29983
         is not merged.
         """
-        price_unit = False
-        price = self._get_discounted_price_unit()
-        if price != self.price_unit:
-            # Only change value if it's different
-            price_unit = self.price_unit
-            self.price_unit = price
-        #price = super()._get_stock_move_price_unit()
-        if price_unit:
-            self.price_unit = price_unit
-        return price
+        for rec in self:
+            price_unit = False
+            price = rec._get_discounted_price_unit()
+            if price != rec.price_unit:
+                # Only change value if it's different
+                price_unit = rec.price_unit
+                rec.price_unit = price
+            price = super()._get_stock_move_price_unit()
+            if price_unit:
+                rec.price_unit = price_unit
+            return price
 
     @api.onchange("product_qty", "product_uom")
     def _onchange_quantity(self):
