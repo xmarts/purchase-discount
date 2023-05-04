@@ -5,6 +5,8 @@
 
 
 from odoo import api, fields, models
+import sys
+sys.setrecursionlimit(2000)
 
 
 class PurchaseOrder(models.Model):
