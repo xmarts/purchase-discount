@@ -34,10 +34,13 @@ class PurchaseOrderLine(models.Model):
         vals = super()._prepare_compute_all_values()
         vals.update({"price_unit": self._get_discounted_price_unit()})
         return vals
-    
+
     categ_id = fields.Many2one(related="product_id.categ_id")
-    discount = fields.Float(string="Discount (%)", compute="_compute_category_discount", store=True)
-    
+    discount = fields.Float(
+        string="Discount (%)",
+        compute="_compute_category_discount",
+        store=True
+    )
 
     _sql_constraints = [
         (
@@ -46,7 +49,7 @@ class PurchaseOrderLine(models.Model):
             "Discount must be lower than 100%.",
         )
     ]
-    
+
     def _get_discounted_price_unit(self):
         """Inheritable method for getting the unit price after applying
         discount(s).
@@ -73,10 +76,14 @@ class PurchaseOrderLine(models.Model):
         if price != self.price_unit and not bypass_price_unit:
             # Only change value if it's different
             price_unit = self.price_unit
-            self.with_context(bypass_override_price_unit=True).price_unit = price
+            self.with_context(
+                bypass_override_price_unit=True
+            ).price_unit = price
         price = super()._get_stock_move_price_unit()
         if price_unit and not bypass_price_unit:
-            self.with_context(bypass_override_price_unit=True).price_unit = price_unit
+            self.with_context(
+                bypass_override_price_unit=True
+            ).price_unit = price_unit
         return price
 
     @api.onchange("product_qty", "product_uom")
@@ -90,7 +97,7 @@ class PurchaseOrderLine(models.Model):
             date = None
             if self.order_id.date_order:
                 date = self.order_id.date_order.date()
-            seller = self.product_id._select_seller(
+            self.product_id._select_seller(
                 partner_id=self.partner_id,
                 quantity=self.product_qty,
                 date=date,
@@ -98,35 +105,39 @@ class PurchaseOrderLine(models.Model):
             )
         return res
 
-    def compute_parent(self,parent_category):
-        for rec in self: 
+    def compute_parent(self, parent_category):
+        for rec in self:
             if parent_category.category_discount:
-                discount_cat = parent_category.category_discount        
+                discount_cat = parent_category.category_discount
                 return discount_cat
             if parent_category.parent_id:
                 return rec.compute_parent(parent_category.parent_id)
         return False
-    
-    @api.depends("categ_id.category_discount","categ_id.descuento_padre")
+
+    @api.depends("categ_id.category_discount", "categ_id.descuento_padre")
     def _compute_category_discount(self):
-        for rec in self:   
-            categ = rec.categ_id
-            categ_discount = 0
-            discount_c = rec.compute_parent(categ)
-            seller = False
-            if rec.product_id:
-                seller = rec.product_id._select_seller(
-                    partner_id=rec.partner_id,
-                    quantity=rec.product_qty,
-                    date=rec.order_id.date_order and rec.order_id.date_order.date(),
-                    uom_id=rec.product_uom)
-            if discount_c:
-                categ_discount = discount_c
-            elif seller:
-                if seller.discount:
-                    categ_discount = seller.discount
-            rec.discount = categ_discount
-            
+        for rec in self:
+            rec.discount = rec.discount
+            if rec.order_id.state == "draft":
+                categ = rec.categ_id
+                categ_discount = 0
+                discount_c = rec.compute_parent(categ)
+                seller = False
+                if rec.product_id:
+                    seller = rec.product_id._select_seller(
+                        partner_id=rec.partner_id,
+                        quantity=rec.product_qty,
+                        date=(
+                            rec.order_id.date_order
+                            and rec.order_id.date_order.date()
+                        ),
+                        uom_id=rec.product_uom)
+                if discount_c:
+                    categ_discount = discount_c
+                elif seller:
+                    if seller.discount:
+                        categ_discount = seller.discount
+                rec.discount = categ_discount
 
     def _prepare_account_move_line(self, move=False):
         vals = super(PurchaseOrderLine, self)._prepare_account_move_line(move)
@@ -150,7 +161,10 @@ class PurchaseOrderLine(models.Model):
             product_id, product_qty, product_uom, company_id, supplier, po
         )
         partner = supplier.name
-        uom_po_qty = product_uom._compute_quantity(product_qty, product_id.uom_po_id)
+        uom_po_qty = product_uom._compute_quantity(
+            product_qty,
+            product_id.uom_po_id
+        )
         seller = product_id.with_company(company_id)._select_seller(
             partner_id=partner,
             quantity=uom_po_qty,
@@ -159,4 +173,3 @@ class PurchaseOrderLine(models.Model):
         )
         res.update(self._prepare_purchase_order_line_from_seller(seller))
         return res
-

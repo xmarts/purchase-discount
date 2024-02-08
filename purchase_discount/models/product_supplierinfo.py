@@ -9,8 +9,7 @@ class ProductSupplierInfo(models.Model):
     _inherit = "product.supplierinfo"
 
     discount = fields.Float(string="Discount (%)", digits="Discount")
-    
-    
+
     @api.onchange("name")
     def onchange_name(self):
         """ Apply the default supplier discount of the selected supplier """

@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
-from odoo import api, fields, models, tools, _
-    
+from odoo import api, fields, models, _
+
+
 class ProductCategory(models.Model):
     _inherit = "product.category"
 
@@ -9,7 +10,7 @@ class ProductCategory(models.Model):
 
     @api.depends("parent_id.category_discount")
     def _compute_category_discount(self):
-        for rec in self:    
+        for rec in self:
             discount = 0
             descuento = rec.parent_id.category_discount
             if descuento:
