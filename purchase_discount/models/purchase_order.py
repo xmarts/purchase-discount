@@ -39,6 +39,20 @@ class PurchaseOrderLine(models.Model):
             "Discount must be lower than 100%.",
         )
     ]
+    
+    def _get_discounted_price_unit(self):
+        """Inheritable method for getting the unit price after applying
+        discount(s).
+
+        :rtype: float
+        :return: Unit price after discount(s).
+        """
+        self.ensure_one()
+        if self.discount:
+            return self.price_unit * (1 - self.discount / 100)
+        return self.price_unit
+
+
 
     def _get_stock_move_price_unit(self):
         """Get correct price with discount replacing current price_unit
