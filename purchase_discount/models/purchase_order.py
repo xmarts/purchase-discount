@@ -10,7 +10,7 @@ from odoo import api, fields, models
 class PurchaseOrder(models.Model):
     _inherit = "purchase.order"
 
-    global_discount = fields.Float(string="Descuento globla")
+    global_discount = fields.Float(string="Descuento global")
 
     def _add_supplier_to_product(self):
         """Insert a mapping of products to PO lines to be picked up
