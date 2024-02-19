@@ -13,7 +13,9 @@
     "version": "16.0.1.2.0",
     "category": "Purchase Management",
     "website": "https://github.com/OCA/purchase-workflow",
-    "depends": ["purchase_stock"],
+    "depends": [
+        "purchase_stock"
+    ],
     "data": [
         "views/purchase_discount_view.xml",
         "views/report_purchaseorder.xml",
