@@ -45,6 +45,9 @@
                     attrs="{'readonly': [('qty_invoiced', '!=', 0)]}"
                 />
             </xpath>
+            <field name="currency_id" position="after">
+                <field name="global_discount"/>
+            </field>
         </field>
     </record>
 </odoo>

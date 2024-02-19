@@ -10,6 +10,8 @@ from odoo import api, fields, models
 class PurchaseOrder(models.Model):
     _inherit = "purchase.order"
 
+    global_discount = fields.Float(string="Descuento globla")
+
     def _add_supplier_to_product(self):
         """Insert a mapping of products to PO lines to be picked up
         in supplierinfo's create()"""
@@ -35,7 +37,20 @@ class PurchaseOrderLine(models.Model):
         vals.update({"discount": self.discount})
         return vals
 
-    discount = fields.Float(string="Discount (%)", digits="Discount")
+    discount = fields.Float(
+        string="Discount (%)",
+        digits="Discount",
+        compute="_compute_discount_global",
+        store=True,
+        readonly=False
+    )
+
+    @api.depends("order_id.global_discount")
+    def _compute_discount_global(self):
+        for rec in self:
+            rec.discount = rec.discount
+            if rec.order_id.global_discount:
+                rec.discount = rec.order_id.global_discount
 
     _sql_constraints = [
         (
