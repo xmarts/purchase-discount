@@ -17,12 +17,15 @@
         "purchase_stock"
     ],
     "data": [
+        "data/fix_views.xml",
         #"views/purchase_discount_view.xml",
         #"views/report_purchaseorder.xml",
         #"views/product_supplierinfo_view.xml",
         #"views/res_partner_view.xml",
     ],
+    'installable': True,
+    'auto_install': False,
+    'application': False,
     "license": "AGPL-3",
-    "installable": True,
     "images": ["images/purchase_discount.png"],
 }

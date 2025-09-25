@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Aplicar fixes al instalar el módulo -->
+    <function model="migration.fixes" name="apply_field_fixes"/>
+    <function model="migration.fixes" name="fix_kanban_templates"/>
+
+</odoo>
