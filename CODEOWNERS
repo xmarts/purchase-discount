@@ -1,0 +1,21 @@
+# CODEOWNERS for xmarts/purchase-discount
+# This file defines who must review changes to specific paths.
+# Format: <path-pattern> <github-username>
+# Reference: https://docs.github.com/en/repositories/managing-your-repositories-settings-and-features/customizing-your-repository/about-code-owners
+
+# Default owner: Eduardo (architecture lead Xmarts) for any change in the fork
+* @ximquinre
+
+# Module manifest changes (license, version, depends) require dual review
+purchase_discount/__manifest__.py @ximquinre
+
+# README + LICENSE + CODEOWNERS: governance changes
+/README.md @ximquinre
+/LICENSE @ximquinre
+/CODEOWNERS @ximquinre
+
+# Models — functional changes
+purchase_discount/models/ @ximquinre
+
+# Tests: any test added/removed should be reviewed
+purchase_discount/tests/ @ximquinre
