@@ -23,9 +23,6 @@
         #"views/product_supplierinfo_view.xml",
         #"views/res_partner_view.xml",
     ],
-    'installable': False,
-    'auto_install': False,
-    'application': False,
     "license": "AGPL-3",
     "images": ["images/purchase_discount.png"],
 }
