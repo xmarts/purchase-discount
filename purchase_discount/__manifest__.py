@@ -24,5 +24,4 @@
     ],
     "license": "AGPL-3",
     "installable": True,
-    "images": ["images/purchase_discount.png"],
 }
