@@ -10,7 +10,7 @@
     "ACSONE SA/NV,"
     "GRAP,"
     "Odoo Community Association (OCA)",
-    "version": "19.0.1.2.0",
+    "version": "19.0.1.2.1",
     "category": "Purchase Management",
     "website": "https://github.com/OCA/purchase-workflow",
     "depends": [
