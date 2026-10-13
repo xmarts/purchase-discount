@@ -9,7 +9,7 @@ class PurchaseReport(models.Model):
     _inherit = "purchase.report"
 
     discount = fields.Float(
-        string="Discount (%)", digits="Discount", group_operator="avg"
+        string="Discount (%)", digits="Discount", aggregator="avg"
     )
 
     def _select(self):
